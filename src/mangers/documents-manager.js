@@ -7,12 +7,12 @@ const {
 } = require('../constants');
 const Errors = require('../constants/errors');
 
-const scope = 'socuments-manager';
+const scope = 'documents-manager';
 
-const constructDocument = (fileDetails, parent, owner) => ({
+const constructDocument = (fileDetails, parentId, owner) => ({
   name: _.get(fileDetails, 'name'),
   type: _.get(fileDetails, 'type'),
-  parent_id: _.get(parent, '_id'),
+  parent_id: parentId,
   owner,
 });
 
@@ -37,19 +37,16 @@ const create = async (fileDetails, userId) => {
   const method = 'create';
   try {
     log(scope, method, 'Creating a document', { fileDetails, userId });
-    const parentId = _.get(fileDetails, 'parent');
-    let parent;
+    const parentId = _.get(fileDetails, 'parent', null);
 
     if (!_.isEmpty(parentId)) {
       log(scope, method, 'Parent not a root directory', { parentId });
-      parent = await validateandGetDirectory(parentId, userId);
-    } else {
-      parent = ENUM.ROOT_DETAILS;
+      await validateandGetDirectory(parentId, userId);
     }
-    const newDocument = constructDocument(fileDetails, parent, userId);
-    const documents = await documentsAccessor.getDocumentsByName(newDocument.name, newDocument.parent_id, userId);
-    if (!_.isEmpty(documents)) {
-      log(scope, method, 'Name already exists', { document, newDocument });
+    const newDocument = constructDocument(fileDetails, parentId, userId);
+    const documents = await documentsAccessor.getDocumentsByName(newDocument, userId);
+    if (!_.isEmpty(documents) && documents.type === newDocument.type) {
+      log(scope, method, 'Name already exists', { documents, newDocument });
       throw Errors.NameAlreayExists;
     }
     await documentsAccessor.createDocument(newDocument);
@@ -66,8 +63,8 @@ const fetchDirectory = async (id, userId) => {
     log(scope, method, 'Fetching directory', { id, userId });
     let parentId;
     if (_.isEmpty(id)) {
-      log(scope, method, 'Fetching root directory', { id, userId });
-      parentId = ENUM.ROOT_DETAILS._id;
+      log(scope, method, 'Fetching from root directory', { id, userId });
+      parentId = null;
     } else {
       await validateandGetDirectory(id, userId);
       parentId = id;

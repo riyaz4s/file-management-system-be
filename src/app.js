@@ -1,5 +1,4 @@
 const express = require('express');
-const swaggerUi = require('swagger-ui-express');
 const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
 
@@ -9,7 +8,6 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const morgan = require('morgan');
 const _ = require('lodash');
-const swaggerDocument = require('../assets/swagger.json');
 const routes = require('./routes');
 const config = require('./config');
 
@@ -23,7 +21,7 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(session({
   name: '',
-  store: new MongoStore(_.get(config, 'db.connectionString')),
+  store: new MongoStore({ url: _.get(config, 'db.connectionString') }),
   secret: 'keyboard cat',
   resave: false,
   saveUninitialized: false,
@@ -36,7 +34,6 @@ app.use('/health', (req, res) => res.json({
   health: 'Good',
 }));
 
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use('/documents', routes.documentsRoute);
 
 app.use((req, res) => res.sendStatus(404));

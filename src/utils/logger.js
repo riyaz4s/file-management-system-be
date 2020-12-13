@@ -1,7 +1,8 @@
 const chalk = require('chalk');
+const _ = require('lodash');
 
-const logger = chalk.bold.yellow;
-const errorLogger = chalk.bold.red;
+const logger = (value) => console.log(chalk.bold.yellow(value));
+const errorLogger = (value) => console.log(chalk.bold.red(value));
 
 const log = (method, scope, msg, args = {}) => {
   try {
@@ -15,7 +16,7 @@ const log = (method, scope, msg, args = {}) => {
 
 const error = (method, scope, err, args = {}) => {
   try {
-    const value = `method: ${method}, scope: ${scope}, error: ${JSON.stringify(err)}, args: ${JSON.stringify(args)}`;
+    const value = `method: ${method}, scope: ${scope}, error: ${JSON.stringify(err)}, messge: ${_.get(err, 'message')} args: ${JSON.stringify(args)}`;
     errorLogger(value);
   } catch (e) {
     const value = `method: ${method}, scope: ${scope}, error: ${err}, args: ${args}`;

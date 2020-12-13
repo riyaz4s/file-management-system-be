@@ -19,8 +19,8 @@ module.exports = {
     to: Joi.objectId().required(),
   }),
   create: Joi.object({
-    type: Joi.string().only(FILE_TYPE).required(),
-    parent: Joi.string().required(),
+    type: Joi.string().valid(FILE_TYPE).required(),
+    parent: Joi.string(),
     name: Joi.string().required(),
     content: Joi.when('type', { is: 'file', then: Joi.required(), otherwise: Joi.optional() }),
   }),

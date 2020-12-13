@@ -15,11 +15,13 @@ const getDocumentById = async (docId, userId) => {
   }
 };
 
-const getDocumentsByName = async (name, parentId, owner) => {
+const getDocumentsByName = async ({ name, parentId, type }, owner) => {
   const method = 'getDocumentByHash';
   try {
     log(scope, method, 'Getting documents by name parent', { name, parentId, owner });
-    const documents = await Documents.findOne({ name, parent_id: parentId, owner });
+    const documents = await Documents.findOne({
+      name, parent_id: parentId, owner, type,
+    });
     return documents;
   } catch (e) {
     error(scope, method, e, { name, parentId, owner });
@@ -27,10 +29,10 @@ const getDocumentsByName = async (name, parentId, owner) => {
   }
 };
 
-const getDocumentsByParentId = async (id) => {
+const getDocumentsByParentId = async (id, userId) => {
   const method = 'getDocumentByHash';
   try {
-    log(scope, method, 'Getting document by parent id', { id });
+    log(scope, method, 'Getting document by parent id', { id, userId });
     const document = await Documents.find({ parent_id: id, owner: userId }, 'name hash');
     return document;
   } catch (e) {

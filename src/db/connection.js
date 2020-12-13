@@ -14,7 +14,7 @@ module.exports = () => {
   });
 
   mongoose.connection.on('connected', () => {
-    console.log(connected('Mongoose default connection is open to ', dbURL));
+    console.log(connected('Mongoose default connection is open to ', _.get(config, 'db.connectionString')));
   });
 
   mongoose.connection.on('error', (err) => {

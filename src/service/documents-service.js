@@ -14,7 +14,7 @@ const create = async (fileDetails, userId) => {
   }
 };
 
-const fetchDirectory = async (id, userId) => {
+const fetchDirectory = async ({ id }, userId) => {
   const method = 'fetchDirectory';
   try {
     const result = await documentsManager.fetchDirectory(id, userId);
@@ -25,7 +25,7 @@ const fetchDirectory = async (id, userId) => {
   }
 };
 
-const fetchFile = async (id, userId) => {
+const fetchFile = async ({ id }, userId) => {
   const method = 'fetchFile';
   try {
     const result = await documentsManager.fetchFile(id, userId);
